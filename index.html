@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Very Important Quiz 💜</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;background:linear-gradient(135deg,#5b21b6,#7c3aed,#a855f7);overflow:hidden}
+.container{background:white;width:100%;max-width:750px;border-radius:25px;padding:35px;text-align:center;box-shadow:0 15px 40px rgba(0,0,0,.15);z-index:2}
+h1{color:#6d28d9;margin-bottom:15px}
+.question{font-size:1.4rem;font-weight:600;margin-bottom:25px;color:#333}
+.answers{display:grid;gap:12px}
+button{border:none;padding:15px;border-radius:15px;cursor:pointer;background:#f3e8ff;color:#5b21b6;font-size:1rem;transition:.25s}
+button:hover{background:#c084fc;color:white;transform:translateY(-2px)}
+.start-btn{margin-top:25px;background:#6d28d9;color:white}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;justify-content:center;align-items:center;padding:20px;z-index:100}
+.modal-content{background:white;width:100%;max-width:500px;border-radius:20px;padding:20px;text-align:center}
+.modal img{width:100%;max-height:400px;object-fit:cover;border-radius:15px}
+.close-btn{margin-top:15px;background:#6d28d9;color:white}
+#korique{font-size:2rem;font-weight:bold;color:#6d28d9}
+</style>
+</head>
+<body>
+<div class="container">
+<div id="startScreen">
+<h1>⚠️ WARNING ⚠️</h1>
+<p style="font-size:1.1rem;line-height:1.8;">
+HUWAG MONG SUBUKANG MAGKAMALI,<br>NAKAMAMATAY.<br><br>
+IF YOU PERFECTLY ANSWER THE QUESTIONS,<br>
+YOU GET ALL THE THINGS YOU DESERVE IN LIFE.<br><br>
+Actually kahit hindi mo rin ma-perfect,
+makukuha mo pa rin lahat ng deserve mo sa bohai
+HAHAHAHAHAHAHA 💜
+</p>
+<button class="start-btn" onclick="startQuiz()">I ACCEPT MY FATE 😌</button>
+</div>
+<div id="quiz" style="display:none;"></div>
+</div>
+
+<div class="modal" id="wrongModal">
+<div class="modal-content">
+<img id="wrongImage" src="wrong1.jpg">
+<h2 id="wrongMessage">BOSSS!?!? 😭</h2>
+<button class="close-btn" onclick="closeWrongModal()">Sige nga ulit 😭</button>
+</div>
+</div>
+
+<div class="modal" id="finalModal">
+<div class="modal-content">
+<img src="final.jpg">
+<h2>❗❗❗MISSION ACCOMPLISHED❗❗❗</h2>
+
+<p style="line-height:1.8;margin-top:10px;">
+Congratulations. 🎉
+<br><br>
+
+You officially passed the quiz.
+(Not that I expected anything less 😌)
+<br><br>
+
+Thank you for being my favorite person. 💜
+</p>
+</div>
+</div>
+
+<script>
+const questions=[
+{question:"Why do I love you?",answers:[
+"Because you make even quiet moments feel meaningful.",
+"Because I always find myself smiling at random memories of you.",
+"Because you feel like home in ways I can’t fully explain.",
+"Because choosing you never feels like a question.",
+"All of the above."
+],correct:4},
+{question:"Without counting, how long have we been together?",answers:[
+"Simula nung baby pa tayo",
+"Basta tsk tsk",
+"8 months na simula nung October 15, 2025, 1:28 AM",
+"Soafer tagal naaaa mwehehehe"
+],correct:2}
+];
+
+let currentQuestion=0;
+const wrongImages=["wrong1.jpg","wrong2.jpg","wrong3.jpg","wrong4.jpg"];
+const wrongMessages=["BOSSS!?!? 😭","TEH ANO BA YAN 😭","PATAY TAYO DYAN 😭","RECONSIDER MO NGA SAGOT MO 😭","PARANG MAY MALI AH 😭"];
+
+function startQuiz(){
+document.getElementById("startScreen").style.display="none";
+document.getElementById("quiz").style.display="block";
+loadQuestion();
+}
+
+function loadQuestion(){
+const q=questions[currentQuestion];
+let html=`<div class="question">${q.question}</div><div class="answers">`;
+q.answers.forEach((a,i)=>{
+html+=`<button onclick="checkAnswer(${i})">${String.fromCharCode(65+i)}. ${a}</button>`;
+});
+html+="</div>";
+document.getElementById("quiz").innerHTML=html;
+}
+
+function checkAnswer(selected){
+const correct=questions[currentQuestion].correct;
+if(selected===correct){
+if(currentQuestion===0){
+document.getElementById("quiz").innerHTML='<div id="korique">KORIQUE KA DYAN!!! 💜✨</div>';
+setTimeout(()=>{currentQuestion++;loadQuestion();},1500);
+}else{
+document.getElementById("finalModal").style.display="flex";
+}
+}else{
+document.getElementById("wrongImage").src=wrongImages[Math.floor(Math.random()*wrongImages.length)];
+document.getElementById("wrongMessage").innerText=wrongMessages[Math.floor(Math.random()*wrongMessages.length)];
+document.getElementById("wrongModal").style.display="flex";
+}
+}
+function closeWrongModal(){
+document.getElementById("wrongModal").style.display="none";
+}
+</script>
+</body>
+</html>
