@@ -19,6 +19,20 @@ button:hover{background:#c084fc;color:white;transform:translateY(-2px)}
 .modal img{width:100%;max-height:400px;object-fit:cover;border-radius:15px}
 .close-btn{margin-top:15px;background:#6d28d9;color:white}
 #korique{font-size:2rem;font-weight:bold;color:#6d28d9}
+
+.heart{
+position:absolute;
+bottom:-50px;
+pointer-events:none;
+animation:float linear infinite;
+filter:drop-shadow(0 0 10px rgba(255,255,255,.7));
+}
+
+@keyframes float{
+to{
+transform:translateY(-120vh);
+}
+}
 </style>
 </head>
 <body>
@@ -35,7 +49,22 @@ HAHAHAHAHAHAHA 💜
 </p>
 <button class="start-btn" onclick="startQuiz()">I ACCEPT MY FATE 😌</button>
 </div>
-<div id="quiz" style="display:none;"></div>
+<div id="quiz" style="display:none;">
+
+<div id="progress"
+style="font-weight:bold;color:#6d28d9;margin-bottom:10px;">
+</div>
+
+<div id="lives"
+style="font-size:28px;margin-bottom:10px;">
+</div>
+
+<div id="timer"
+style="font-size:22px;color:#ef4444;margin-bottom:20px;">
+</div>
+
+<div id="questionArea"></div>
+
 </div>
 
 <div class="modal" id="wrongModal">
@@ -66,59 +95,348 @@ Thank you for being my favorite person. 💜
 
 <script>
 const questions=[
-{question:"Why do I love you?",answers:[
+
+{
+question:"What would I most likely do if we suddenly had a free day together?",
+answers:[
+"Sleep the whole day",
+"Stay at home and ignore you",
+"Find somewhere to eat and spend time with you",
+"Ask Beru what to do"
+],
+correct:2
+},
+
+{
+question:"What's something I pretend not to care about but actually do?",
+answers:[
+"The weather",
+"Whether you've eaten or not",
+"The stock market",
+"My screen time"
+],
+correct:1
+},
+
+{
+question:"Which one would make me happiest?",
+answers:[
+"A million pesos",
+"Unlimited chicken",
+"A random 'I miss you' message from you",
+"ALL OF THE ABOVE PERO PINAKAGUSTO KO YUNG NAMIMISS MO KO"
+],
+correct:3
+},
+
+{
+question:"If we got lost somewhere together, what's my first move?",
+answers:[
+"Panic",
+"Blame Google Maps",
+"Look for food first",
+"Figure it out as long as we're together"
+],
+correct:3
+},
+
+{
+question:"What do I secretly enjoy the most?",
+answers:[
+"Our dates",
+"Our calls",
+"Our random conversations that start with nothing",
+"All of the above"
+],
+correct:3
+},
+
+{
+question:"What's the easiest way to make my day better?",
+answers:[
+"Send me money",
+"Buy me food",
+"Be with me",
+"Let me win an argument"
+],
+correct:2
+},
+
+{
+question:"Why do I love you?",
+answers:[
 "Because you make even quiet moments feel meaningful.",
 "Because I always find myself smiling at random memories of you.",
 "Because you feel like home in ways I can’t fully explain.",
 "Because choosing you never feels like a question.",
 "All of the above."
-],correct:4},
-{question:"Without counting, how long have we been together?",answers:[
+],
+correct:4
+},
+
+{
+question:"Without counting, how long have we been together?",
+answers:[
 "Simula nung baby pa tayo",
 "Basta tsk tsk",
-"8 months na simula nung October 15, 2025, 1:28 AM",
+"8 months na simula nung October 15, 2025, 1:28 AM ❤️",
 "Soafer tagal naaaa mwehehehe"
-],correct:2}
+],
+correct:2
+}
+
 ];
 
 let currentQuestion=0;
+let lives=3;
+let timeLeft=15;
+let timer;
 const wrongImages=["wrong1.jpg","wrong2.jpg","wrong3.jpg","wrong4.jpg"];
 const wrongMessages=["BOSSS!?!? 😭","TEH ANO BA YAN 😭","PATAY TAYO DYAN 😭","RECONSIDER MO NGA SAGOT MO 😭","PARANG MAY MALI AH 😭"];
 
 function startQuiz(){
+
 document.getElementById("startScreen").style.display="none";
 document.getElementById("quiz").style.display="block";
+
 loadQuestion();
+
+}
+
+function updateLives(){
+
+document.getElementById("lives").innerHTML=
+"❤️".repeat(lives)+"🖤".repeat(3-lives);
+
+}
+
+function startTimer(){
+
+clearInterval(timer);
+
+timeLeft=15;
+
+document.getElementById("timer").innerHTML=
+"⏳ "+timeLeft+"s";
+
+timer=setInterval(()=>{
+
+timeLeft--;
+
+document.getElementById("timer").innerHTML=
+"⏳ "+timeLeft+"s";
+
+if(timeLeft<=0){
+
+clearInterval(timer);
+
+lives--;
+
+updateLives();
+
+if(lives<=0){
+
+alert("NAUUUUUUUUR 😭");
+
+location.reload();
+
+return;
+
+}
+
+currentQuestion++;
+
+if(currentQuestion>=questions.length){
+
+document.getElementById("finalModal").style.display="flex";
+
+return;
+
+}
+
+loadQuestion();
+
+}
+
+},1000);
+
 }
 
 function loadQuestion(){
+
+updateLives();
+
+document.getElementById("progress").innerHTML=
+"Question "+(currentQuestion+1)+"/8";
+
 const q=questions[currentQuestion];
-let html=`<div class="question">${q.question}</div><div class="answers">`;
+
+let html=
+`<div class="question">${q.question}</div>
+<div class="answers">`;
+
 q.answers.forEach((a,i)=>{
-html+=`<button onclick="checkAnswer(${i})">${String.fromCharCode(65+i)}. ${a}</button>`;
+
+html+=
+`<button onclick="checkAnswer(${i})">
+${String.fromCharCode(65+i)}. ${a}
+</button>`;
+
 });
+
 html+="</div>";
-document.getElementById("quiz").innerHTML=html;
+
+document.getElementById("questionArea").innerHTML=
+html;
+
+startTimer();
+
 }
 
 function checkAnswer(selected){
-const correct=questions[currentQuestion].correct;
+
+clearInterval(timer);
+
+const correct=
+questions[currentQuestion].correct;
+
 if(selected===correct){
-if(currentQuestion===0){
-document.getElementById("quiz").innerHTML='<div id="korique">KORIQUE KA DYAN!!! 💜✨</div>';
-setTimeout(()=>{currentQuestion++;loadQuestion();},1500);
-}else{
+
+if(currentQuestion<=6){
+
+document.getElementById("timer").innerHTML="";
+
+document.getElementById("questionArea").innerHTML=
+'<div id="korique">KORIQUE KA DYAN!!! 💜✨</div>';
+
+setTimeout(()=>{
+
+currentQuestion++;
+
+if(currentQuestion>=questions.length){
+
 document.getElementById("finalModal").style.display="flex";
+
 }
-}else{
-document.getElementById("wrongImage").src=wrongImages[Math.floor(Math.random()*wrongImages.length)];
-document.getElementById("wrongMessage").innerText=wrongMessages[Math.floor(Math.random()*wrongMessages.length)];
+else{
+
+loadQuestion();
+
+}
+
+},1500);
+
+return;
+
+}
+
+if(currentQuestion===7){
+
+document.getElementById("finalModal").style.display="flex";
+
+return;
+
+}
+
+currentQuestion++;
+
+loadQuestion();
+
+}
+
+else{
+
+lives--;
+
+updateLives();
+
+if(lives<=0){
+
+alert("NAUUUUUUUUR 😭");
+
+location.reload();
+
+return;
+
+}
+
+if(
+currentQuestion===5 &&
+(selected===0 || selected===1 || selected===3)
+){
+
+document.getElementById("wrongMessage").innerText=
+"OO pero hindi ito ang tamang sagot 😭";
+
+}
+else{
+
+document.getElementById("wrongMessage").innerText=
+wrongMessages[
+Math.floor(Math.random()*wrongMessages.length)
+];
+
+}
+
+document.getElementById("wrongImage").src=
+wrongImages[
+Math.floor(Math.random()*wrongImages.length)
+];
+
 document.getElementById("wrongModal").style.display="flex";
+
+startTimer();
+
 }
+
 }
+
 function closeWrongModal(){
+
 document.getElementById("wrongModal").style.display="none";
+
 }
+
+setInterval(()=>{
+
+const heart=document.createElement("div");
+
+const magicalThings=[
+"🦋",
+"💜",
+"✨",
+"🌸",
+"⭐"
+];
+
+heart.innerHTML=
+magicalThings[
+Math.floor(Math.random()*magicalThings.length)
+];
+
+heart.classList.add("heart");
+
+heart.style.left=Math.random()*100+"%";
+
+heart.style.fontSize=
+(18+Math.random()*30)+"px";
+
+heart.style.animationDuration=
+(5+Math.random()*10)+"s";
+
+heart.style.opacity=
+(0.5+Math.random()*0.5);
+
+document.body.appendChild(heart);
+
+setTimeout(()=>{
+
+heart.remove();
+
+},15000);
+
+},350);
+
 </script>
 </body>
 </html>
